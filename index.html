@@ -2,46 +2,96 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Controle de Ponto</title>
-
+<title>Ponto Online</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1976d2">
+<link rel="stylesheet" href="style.css">
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 </head>
 <body>
 
-<h2>Controle de Ponto</h2>
+<h2>⏱️ Controle de Ponto</h2>
 
-<input type="text" id="nome" placeholder="Nome completo">
+<!-- LOGIN -->
+<div id="loginBox">
+  <input id="loginUser" placeholder="Usuário">
+  <input id="loginPass" type="password" placeholder="Senha">
+  <button onclick="login()">Entrar</button>
+  <button onclick="registrar()">Cadastrar</button>
+</div>
 
-<select id="tipo">
-  <option value="Entrada">Entrada</option>
-  <option value="Saída">Saída</option>
-  <option value="Almoço Saída">Saída para Almoço</option>
-  <option value="Almoço Retorno">Retorno do Almoço</option>
-</select>
+<!-- APP -->
+<div id="app" style="display:none">
 
-<button onclick="registrarPonto()">Registrar Ponto</button>
-<button onclick="gerarExcel()">Exportar Excel</button>
-<button onclick="gerarPDF()">Exportar PDF</button>
+  <h3 id="usuarioLogado"></h3>
 
-<hr>
+  <!-- BOTÕES EM ÍCONES -->
+  <div class="botoes-icones">
 
-<div id="lista"></div>
+    <div class="botao-icone entrada" onclick="registrarPonto('entrada')">
+      🚩
+      <span>Entrada</span>
+    </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <div class="botao-icone saida" onclick="registrarPonto('saida')">
+      🏁
+      <span>Saída</span>
+    </div>
+
+    <div class="botao-icone almoco_saida" onclick="registrarPonto('almoco_saida')">
+      🍔
+      <span>Saída Almoço</span>
+    </div>
+
+    <div class="botao-icone almoco_retorno" onclick="registrarPonto('almoco_retorno')">
+      ☕
+      <span>Retorno Almoço</span>
+    </div>
+
+  </div>
+
+  <hr>
+
+  <!-- RELATÓRIOS -->
+  <h4>📄 Relatórios</h4>
+  <input type="date" id="dataInicio">
+  <input type="date" id="dataFim">
+
+  <div id="adminFiltro" style="display:none">
+    <select id="filtroUsuario" onchange="carregar()"></select>
+  </div>
+
+  <button onclick="gerarPDF()">📕 Gerar PDF</button>
+  <button onclick="gerarExcel()">📗 Gerar Excel</button>
+
+  <hr>
+
+  <!-- ADMIN -->
+  <div id="adminSenha" style="display:none">
+    <h4>🔑 Alterar senha Admin</h4>
+    <input id="novaSenha" type="password" placeholder="Nova senha">
+    <button onclick="alterarSenhaAdmin()">Salvar</button>
+  </div>
+
+  <button onclick="logout()">🚪 Sair</button>
+
+  <h4>📋 Registros</h4>
+  <div id="lista"></div>
+
+</div>
+
+<!-- POPUP -->
+<div id="popup" class="popup">
+  <div id="popupTexto"></div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <script src="app.js"></script>
-
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
-}
-</script>
 
 </body>
 </html>

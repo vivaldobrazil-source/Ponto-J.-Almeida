@@ -1,97 +1,218 @@
-let registros = [];
+let usuario = null;
 
-function registrarPonto() {
-  const nome = document.getElementById("nome").value.trim();
-  const tipo = document.getElementById("tipo").value;
+/* ================= USUÁRIOS ================= */
 
-  if (!nome) {
-    alert("Digite seu nome completo.");
+function carregarUsuarios(){
+  return JSON.parse(localStorage.getItem("usuarios") || "{}");
+}
+
+function salvarUsuarios(u){
+  localStorage.setItem("usuarios", JSON.stringify(u));
+}
+
+// cria admin automaticamente
+(function init(){
+  let u = carregarUsuarios();
+  if(!u["Admim"]){
+    u["Admim"] = { senha:"Admin_Admin", admin:true };
+    salvarUsuarios(u);
+  }
+})();
+
+/* ================= LOGIN ================= */
+
+function login(){
+  const user = loginUser.value;
+  const pass = loginPass.value;
+  const usuarios = carregarUsuarios();
+
+  if(!usuarios[user] || usuarios[user].senha !== pass){
+    alert("Login inválido");
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(async pos => {
-    const lat = pos.coords.latitude;
-    const lon = pos.coords.longitude;
+  usuario = user;
+  loginBox.style.display="none";
+  app.style.display="block";
+  usuarioLogado.innerText = "👤 " + user;
 
-    const endereco = await buscarEndereco(lat, lon);
-    const dataHora = new Date().toLocaleString();
+  if(usuarios[user].admin){
+    adminSenha.style.display="block";
+    adminFiltro.style.display="block";
+    carregarFiltroUsuarios();
+  }
 
-    const registro = {
-      nome,
-      tipo,
-      dataHora,
-      endereco
-    };
+  carregar();
+}
 
-    registros.push(registro);
-    atualizarTela();
-  }, () => {
-    alert("Não foi possível obter a localização.");
+function registrar(){
+  const user = loginUser.value;
+  const pass = loginPass.value;
+  let usuarios = carregarUsuarios();
+
+  if(usuarios[user]){
+    alert("Usuário já existe");
+    return;
+  }
+
+  usuarios[user] = { senha:pass, admin:false };
+  salvarUsuarios(usuarios);
+  alert("Usuário cadastrado!");
+}
+
+function logout(){
+  location.reload();
+}
+
+/* ================= ADMIN ================= */
+
+function alterarSenhaAdmin(){
+  const nova = novaSenha.value;
+  if(!nova) return alert("Digite a nova senha");
+
+  let u = carregarUsuarios();
+  u["Admim"].senha = nova;
+  salvarUsuarios(u);
+  alert("Senha alterada!");
+}
+
+function carregarFiltroUsuarios(){
+  let u = carregarUsuarios();
+  filtroUsuario.innerHTML = `<option value="todos">Todos</option>`;
+  Object.keys(u).forEach(nome=>{
+    filtroUsuario.innerHTML += `<option>${nome}</option>`;
   });
 }
 
-async function buscarEndereco(lat, lon) {
-  const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
-  const resp = await fetch(url);
-  const data = await resp.json();
-  return data.display_name || "Endereço não encontrado";
+/* ================= REGISTROS ================= */
+
+function obterDados(){
+  return JSON.parse(localStorage.getItem("pontos")||"[]");
 }
 
-function atualizarTela() {
-  const div = document.getElementById("lista");
-  div.innerHTML = "";
-
-  registros.forEach(r => {
-    div.innerHTML += `
-      <div>
-        <strong>${r.nome}</strong><br>
-        Tipo: ${r.tipo}<br>
-        Data/Hora: ${r.dataHora}<br>
-        Endereço: ${r.endereco}
-        <hr>
-      </div>
-    `;
-  });
+function salvarDados(d){
+  localStorage.setItem("pontos",JSON.stringify(d));
 }
 
-function gerarExcel() {
-  if (registros.length === 0) {
-    alert("Nenhum registro para exportar.");
-    return;
+/* ================= GEO ================= */
+
+async function buscarEndereco(lat,lon){
+  try{
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+    const d = await r.json();
+    return d.display_name || "";
+  }catch{
+    return "";
   }
-
-  const ws = XLSX.utils.json_to_sheet(registros);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Registros");
-  XLSX.writeFile(wb, "controle_ponto.xlsx");
 }
 
-function gerarPDF() {
-  if (registros.length === 0) {
-    alert("Nenhum registro para exportar.");
-    return;
-  }
+/* ================= REGISTRO ================= */
 
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
+function registrarPonto(tipo){
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    let dados = obterDados();
+    const hoje = new Date().toLocaleDateString();
 
-  let y = 10;
-
-  registros.forEach((r, i) => {
-    doc.text(`Nome: ${r.nome}`, 10, y);
-    y += 6;
-    doc.text(`Tipo: ${r.tipo}`, 10, y);
-    y += 6;
-    doc.text(`Data/Hora: ${r.dataHora}`, 10, y);
-    y += 6;
-    doc.text(`Endereço: ${r.endereco}`, 10, y);
-    y += 10;
-
-    if (y > 270) {
-      doc.addPage();
-      y = 10;
+    if((tipo==="almoco_saida" || tipo==="almoco_retorno") &&
+      dados.some(r=>r.usuario===usuario && r.tipo===tipo && r.data===hoje)){
+        alert("Este registro já foi feito hoje.");
+        return;
     }
+
+    const endereco = await buscarEndereco(pos.coords.latitude,pos.coords.longitude);
+
+    dados.push({
+      usuario,
+      tipo,
+      data:hoje,
+      hora:new Date().toLocaleTimeString(),
+      endereco
+    });
+
+    salvarDados(dados);
+    mostrarPopup(tipo);
+    carregar();
+  }, ()=> alert("Erro ao obter localização"));
+}
+
+/* ================= LISTAGEM ================= */
+
+function carregar(){
+  const dados = obterDados();
+  const usuarios = carregarUsuarios();
+  let filtro = usuario;
+
+  if(usuarios[usuario].admin && filtroUsuario.value!=="todos"){
+    filtro = filtroUsuario.value;
+  }
+
+  lista.innerHTML = dados
+    .filter(r=> usuarios[usuario].admin ? (filtro==="todos"||r.usuario===filtro) : r.usuario===usuario)
+    .map(r=>`
+      <div>
+      👤 ${r.usuario}<br>
+      ${r.tipo} - ${r.data} ${r.hora}<br>
+      📍 ${r.endereco}
+      </div><hr>
+    `).join("");
+}
+
+/* ================= POPUP ================= */
+
+function mostrarPopup(tipo){
+  const msg={
+    entrada:"Entrada registrada",
+    saida:"Saída registrada",
+    almoco_saida:"Saída Almoço registrada",
+    almoco_retorno:"Retorno Almoço registrada"
+  };
+  popupTexto.innerText = msg[tipo];
+  popup.style.display="flex";
+  setTimeout(()=>popup.style.display="none",1500);
+}
+
+/* ================= FILTRO ================= */
+
+function filtrarPeriodo(){
+  const ini = dataInicio.value;
+  const fim = dataFim.value;
+  const dados = obterDados();
+  return dados.filter(r=>{
+    const d = new Date(r.data.split("/").reverse().join("-"));
+    if(ini && d < new Date(ini)) return false;
+    if(fim && d > new Date(fim)) return false;
+    return true;
+  });
+}
+
+/* ================= PDF ================= */
+
+function gerarPDF(){
+  const {jsPDF} = window.jspdf;
+  const pdf = new jsPDF();
+  let y=10;
+
+  filtrarPeriodo().forEach(r=>{
+    pdf.text(`${r.usuario} - ${r.tipo}`,10,y); y+=6;
+    pdf.text(`${r.data} ${r.hora}`,10,y); y+=6;
+    pdf.text(r.endereco,10,y); y+=10;
   });
 
-  doc.save("controle_ponto.pdf");
+  pdf.save("relatorio.pdf");
+}
+
+/* ================= EXCEL ================= */
+
+function gerarExcel(){
+  let csv="Usuario,Tipo,Data,Hora,Endereco\n";
+  filtrarPeriodo().forEach(r=>{
+    csv+=`${r.usuario},${r.tipo},${r.data},${r.hora},"${r.endereco}"\n`;
+  });
+
+  const blob = new Blob([csv],{type:"text/csv"});
+  const url = URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="relatorio.csv";
+  a.click();
 }
