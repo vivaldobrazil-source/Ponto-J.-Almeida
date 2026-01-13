@@ -1,75 +1,46 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Ponto Online - PWA</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#1976d2">
-
-<link rel="manifest" href="manifest.json">
+<title>Controle de Ponto - Firebase</title>
 <link rel="stylesheet" href="style.css">
-
-<link rel="icon" href="icon-192.png">
-
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
+<div class="container">
 
-<h1>⏱️ Controle de Ponto</h1>
-
-<!-- LOGIN -->
-<div id="loginArea">
-    <h2>🔐 Login</h2>
-    <input type="text" id="usuario" placeholder="Usuário">
-    <input type="password" id="senha" placeholder="Senha">
+  <!-- Tela de Login -->
+  <div id="login-screen">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Senha">
     <button onclick="login()">Entrar</button>
-</div>
+    <button onclick="mostrarRegistro()">Registrar novo usuário</button>
+    <p id="login-error" class="error"></p>
+  </div>
 
-<!-- APP -->
-<div id="appArea" style="display:none;">
+  <!-- Tela de Registro -->
+  <div id="register-screen" class="hidden">
+    <h2>Registrar Usuário</h2>
+    <input type="email" id="reg-email" placeholder="Email">
+    <input type="password" id="reg-password" placeholder="Senha">
+    <button onclick="registrar()">Registrar</button>
+    <button onclick="voltarLogin()">Voltar</button>
+    <p id="register-error" class="error"></p>
+  </div>
 
-    <h2 id="usuarioLogado"></h2>
+  <!-- Tela de Marcação de Ponto -->
+  <div id="ponto-screen" class="hidden">
+    <h2>Bem-vindo, <span id="user-display"></span></h2>
 
-    <!-- BOTÕES DE MARCAÇÃO -->
-    <div class="botoes">
-
-        <button class="btn grande" onclick="registrar('entrada')">🚩 Entrada</button>
-        <button class="btn grande" onclick="registrar('saida')">🏁 Saída</button>
-        <button class="btn grande" onclick="registrar('almoco_saida')">🍔 Saída Almoço</button>
-        <button class="btn grande" onclick="registrar('almoco_retorno')">☕ Retorno Almoço</button>
-
+    <div class="buttons">
+      <button onclick="marcarPonto('entrada')">🚩 Entrada</button>
+      <button onclick="marcarPonto('saida')">🏁 Saída</button>
+      <button onclick="marcarPonto('saidaAlmoço')">🍔 Saída Almoço</button>
+      <button onclick="marcarPonto('retornoAlmoço')">☕ Retorno Almoço</button>
     </div>
-
-    <hr>
-
-    <!-- RELATÓRIOS -->
-    <h3>📊 Relatórios</h3>
-
-    <label>Data Inicial</label>
-    <input type="date" id="dataInicio">
-
-    <label>Data Final</label>
-    <input type="date" id="dataFim">
-
-    <button onclick="gerarPDF()">📄 Gerar PDF</button>
-    <button onclick="gerarExcel()">📊 Gerar Excel</button>
-
-    <hr>
-
-    <button onclick="logout()">🚪 Sair</button>
-
-</div>
-
-<script src="app.js"></script>
-
-<!-- BIBLIOTECA EXCEL XLSX -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
-<script>
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js');
-}
-</script>
-
-</body>
-</html>

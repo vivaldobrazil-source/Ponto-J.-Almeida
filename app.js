@@ -1,218 +1,178 @@
-let usuario = null;
+// CONFIGURAÇÃO FIREBASE
+const firebaseConfig = {
+  apiKey: "COLE_SUA_API_KEY",
+  authDomain: "SEU_PROJETO.firebaseapp.com",
+  projectId: "SEU_PROJETO",
+  storageBucket: "SEU_PROJETO.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-/* ================= USUÁRIOS ================= */
+let currentUser = null;
 
-function carregarUsuarios(){
-  return JSON.parse(localStorage.getItem("usuarios") || "{}");
-}
+// LOGIN
+function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-function salvarUsuarios(u){
-  localStorage.setItem("usuarios", JSON.stringify(u));
-}
+  auth.signInWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      currentUser = userCredential.user;
+      document.getElementById("login-screen").classList.add("hidden");
+      document.getElementById("ponto-screen").classList.remove("hidden");
+      document.getElementById("user-display").innerText = currentUser.email;
 
-// cria admin automaticamente
-(function init(){
-  let u = carregarUsuarios();
-  if(!u["Admim"]){
-    u["Admim"] = { senha:"Admin_Admin", admin:true };
-    salvarUsuarios(u);
-  }
-})();
+      // Mostrar controles Admin
+      if(currentUser.email === "admin@admin.com"){
+        document.getElementById("admin-controls").classList.remove("hidden");
+      }
 
-/* ================= LOGIN ================= */
-
-function login(){
-  const user = loginUser.value;
-  const pass = loginPass.value;
-  const usuarios = carregarUsuarios();
-
-  if(!usuarios[user] || usuarios[user].senha !== pass){
-    alert("Login inválido");
-    return;
-  }
-
-  usuario = user;
-  loginBox.style.display="none";
-  app.style.display="block";
-  usuarioLogado.innerText = "👤 " + user;
-
-  if(usuarios[user].admin){
-    adminSenha.style.display="block";
-    adminFiltro.style.display="block";
-    carregarFiltroUsuarios();
-  }
-
-  carregar();
-}
-
-function registrar(){
-  const user = loginUser.value;
-  const pass = loginPass.value;
-  let usuarios = carregarUsuarios();
-
-  if(usuarios[user]){
-    alert("Usuário já existe");
-    return;
-  }
-
-  usuarios[user] = { senha:pass, admin:false };
-  salvarUsuarios(usuarios);
-  alert("Usuário cadastrado!");
-}
-
-function logout(){
-  location.reload();
-}
-
-/* ================= ADMIN ================= */
-
-function alterarSenhaAdmin(){
-  const nova = novaSenha.value;
-  if(!nova) return alert("Digite a nova senha");
-
-  let u = carregarUsuarios();
-  u["Admim"].senha = nova;
-  salvarUsuarios(u);
-  alert("Senha alterada!");
-}
-
-function carregarFiltroUsuarios(){
-  let u = carregarUsuarios();
-  filtroUsuario.innerHTML = `<option value="todos">Todos</option>`;
-  Object.keys(u).forEach(nome=>{
-    filtroUsuario.innerHTML += `<option>${nome}</option>`;
-  });
-}
-
-/* ================= REGISTROS ================= */
-
-function obterDados(){
-  return JSON.parse(localStorage.getItem("pontos")||"[]");
-}
-
-function salvarDados(d){
-  localStorage.setItem("pontos",JSON.stringify(d));
-}
-
-/* ================= GEO ================= */
-
-async function buscarEndereco(lat,lon){
-  try{
-    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
-    const d = await r.json();
-    return d.display_name || "";
-  }catch{
-    return "";
-  }
-}
-
-/* ================= REGISTRO ================= */
-
-function registrarPonto(tipo){
-  navigator.geolocation.getCurrentPosition(async pos=>{
-    let dados = obterDados();
-    const hoje = new Date().toLocaleDateString();
-
-    if((tipo==="almoco_saida" || tipo==="almoco_retorno") &&
-      dados.some(r=>r.usuario===usuario && r.tipo===tipo && r.data===hoje)){
-        alert("Este registro já foi feito hoje.");
-        return;
-    }
-
-    const endereco = await buscarEndereco(pos.coords.latitude,pos.coords.longitude);
-
-    dados.push({
-      usuario,
-      tipo,
-      data:hoje,
-      hora:new Date().toLocaleTimeString(),
-      endereco
+      carregarTabela();
+    })
+    .catch(error => {
+      document.getElementById("login-error").innerText = error.message;
     });
-
-    salvarDados(dados);
-    mostrarPopup(tipo);
-    carregar();
-  }, ()=> alert("Erro ao obter localização"));
 }
 
-/* ================= LISTAGEM ================= */
+// MOSTRAR TELA DE REGISTRO
+function mostrarRegistro(){
+  document.getElementById("login-screen").classList.add("hidden");
+  document.getElementById("register-screen").classList.remove("hidden");
+}
 
-function carregar(){
-  const dados = obterDados();
-  const usuarios = carregarUsuarios();
-  let filtro = usuario;
+// VOLTAR LOGIN
+function voltarLogin(){
+  document.getElementById("register-screen").classList.add("hidden");
+  document.getElementById("login-screen").classList.remove("hidden");
+}
 
-  if(usuarios[usuario].admin && filtroUsuario.value!=="todos"){
-    filtro = filtroUsuario.value;
+// REGISTRAR NOVO USUÁRIO
+function registrar(){
+  const email = document.getElementById("reg-email").value;
+  const password = document.getElementById("reg-password").value;
+  auth.createUserWithEmailAndPassword(email,password)
+    .then(()=> {
+      alert("Usuário registrado com sucesso!");
+      voltarLogin();
+    })
+    .catch(error=>{
+      document.getElementById("register-error").innerText = error.message;
+    });
+}
+
+// LOGOUT
+function logout() {
+  auth.signOut();
+  currentUser = null;
+  document.getElementById("login-screen").classList.remove("hidden");
+  document.getElementById("ponto-screen").classList.add("hidden");
+}
+
+// MARCAR PONTO
+function marcarPonto(tipo) {
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const data = new Date();
+    const registro = {
+      usuario: currentUser.email,
+      tipo: tipo,
+      data: data.toISOString(),
+      localizacao: `Lat: ${pos.coords.latitude.toFixed(5)}, Lng: ${pos.coords.longitude.toFixed(5)}`
+    };
+    await db.collection("pontos").add(registro);
+    carregarTabela();
+  }, () => alert("Não foi possível obter localização."));
+}
+
+// CARREGAR TABELA
+async function carregarTabela() {
+  let snapshot;
+  if(currentUser.email === "admin@admin.com"){
+    snapshot = await db.collection("pontos").orderBy("data", "desc").get();
+  } else {
+    snapshot = await db.collection("pontos").where("usuario","==",currentUser.email).orderBy("data","desc").get();
   }
 
-  lista.innerHTML = dados
-    .filter(r=> usuarios[usuario].admin ? (filtro==="todos"||r.usuario===filtro) : r.usuario===usuario)
-    .map(r=>`
-      <div>
-      👤 ${r.usuario}<br>
-      ${r.tipo} - ${r.data} ${r.hora}<br>
-      📍 ${r.endereco}
-      </div><hr>
-    `).join("");
-}
-
-/* ================= POPUP ================= */
-
-function mostrarPopup(tipo){
-  const msg={
-    entrada:"Entrada registrada",
-    saida:"Saída registrada",
-    almoco_saida:"Saída Almoço registrada",
-    almoco_retorno:"Retorno Almoço registrada"
-  };
-  popupTexto.innerText = msg[tipo];
-  popup.style.display="flex";
-  setTimeout(()=>popup.style.display="none",1500);
-}
-
-/* ================= FILTRO ================= */
-
-function filtrarPeriodo(){
-  const ini = dataInicio.value;
-  const fim = dataFim.value;
-  const dados = obterDados();
-  return dados.filter(r=>{
-    const d = new Date(r.data.split("/").reverse().join("-"));
-    if(ini && d < new Date(ini)) return false;
-    if(fim && d > new Date(fim)) return false;
-    return true;
+  const tbody = document.querySelector("#tabela-pontos tbody");
+  tbody.innerHTML = "";
+  snapshot.forEach(doc => {
+    const r = doc.data();
+    tbody.innerHTML += `<tr>
+      <td>${r.usuario}</td>
+      <td>${r.tipo}</td>
+      <td>${new Date(r.data).toLocaleString()}</td>
+      <td>${r.localizacao}</td>
+      <td>${currentUser.email==="admin@admin.com" || r.usuario===currentUser.email ? `<button onclick="excluir('${doc.id}')">🗑️</button>`:""}</td>
+    </tr>`;
   });
 }
 
-/* ================= PDF ================= */
-
-function gerarPDF(){
-  const {jsPDF} = window.jspdf;
-  const pdf = new jsPDF();
-  let y=10;
-
-  filtrarPeriodo().forEach(r=>{
-    pdf.text(`${r.usuario} - ${r.tipo}`,10,y); y+=6;
-    pdf.text(`${r.data} ${r.hora}`,10,y); y+=6;
-    pdf.text(r.endereco,10,y); y+=10;
-  });
-
-  pdf.save("relatorio.pdf");
+// EXCLUIR REGISTRO
+function excluir(id){
+  if(confirm("Deseja excluir este registro?")){
+    db.collection("pontos").doc(id).delete().then(()=> carregarTabela());
+  }
 }
 
-/* ================= EXCEL ================= */
+// GERAR PDF
+async function gerarPDF(admin=false){
+  let snapshot;
+  if(admin){
+    snapshot = await filtrarPontosAdmin();
+  } else {
+    snapshot = await db.collection("pontos").where("usuario","==",currentUser.email).orderBy("data","desc").get();
+  }
 
-function gerarExcel(){
-  let csv="Usuario,Tipo,Data,Hora,Endereco\n";
-  filtrarPeriodo().forEach(r=>{
-    csv+=`${r.usuario},${r.tipo},${r.data},${r.hora},"${r.endereco}"\n`;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.text("Relatório de Ponto",10,10);
+  let y = 20;
+  snapshot.forEach(docSnap => {
+    const r = docSnap.data();
+    doc.text(`${r.usuario} - ${r.tipo} - ${new Date(r.data).toLocaleString()} - ${r.localizacao}`,10,y);
+    y+=10;
   });
+  doc.save("relatorio_ponto.pdf");
+}
 
-  const blob = new Blob([csv],{type:"text/csv"});
-  const url = URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;
-  a.download="relatorio.csv";
-  a.click();
+// GERAR EXCEL
+async function gerarExcel(admin=false){
+  let snapshot;
+  if(admin){
+    snapshot = await filtrarPontosAdmin();
+  } else {
+    snapshot = await db.collection("pontos").where("usuario","==",currentUser.email).orderBy("data","desc").get();
+  }
+  const dados = snapshot.docs.map(d => d.data());
+  const ws = XLSX.utils.json_to_sheet(dados);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Pontos");
+  XLSX.writeFile(wb, "relatorio_ponto.xlsx");
+}
+
+// FILTRAR PARA ADMIN
+async function filtrarPontosAdmin(){
+  const inicio = document.getElementById("data-inicio").value;
+  const fim = document.getElementById("data-fim").value;
+  const usuario = document.getElementById("usuario-rel").value;
+
+  let query = db.collection("pontos");
+  if(usuario) query = query.where("usuario","==",usuario);
+  if(inicio) query = query.where("data",">=",new Date(inicio).toISOString());
+  if(fim) query = query.where("data","<=",new Date(fim+"T23:59:59").toISOString());
+
+  return await query.orderBy("data","desc").get();
+}
+
+// WHATSAPP
+async function compartilharWhatsApp(){
+  const snapshot = await db.collection("pontos").where("usuario","==",currentUser.email).orderBy("data","desc").get();
+  let mensagem = "📋 Relatório de Ponto:\n";
+  snapshot.forEach(doc => {
+    const r = doc.data();
+    mensagem += `${r.tipo} - ${new Date(r.data).toLocaleString()} - ${r.localizacao}\n`;
+  });
+  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`,"_blank");
 }

@@ -1,62 +1,11 @@
-body {
-    font-family: Arial, sans-serif;
-    background: #f2f2f2;
-    text-align: center;
-    padding: 10px;
-}
-
-h1 {
-    color: #1976d2;
-}
-
-input {
-    padding: 10px;
-    margin: 6px;
-    width: 90%;
-    max-width: 300px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-button {
-    cursor: pointer;
-}
-
-/* Área dos botões */
-.botoes {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    max-width: 400px;
-    margin: auto;
-}
-
-/* Botões grandes (agora com ícones menores) */
-.btn.grande {
-    background: white;
-    border: 2px solid #1976d2;
-    border-radius: 10px;
-    padding: 12px;
-    font-size: 14px;   /* TEXTO MENOR */
-    font-weight: bold;
-}
-
-/* Emoji / ícones menores */
-.btn.grande span {
-    font-size: 16px;   /* TAMANHO DO ÍCONE */
-}
-
-/* Botões de relatório */
-button {
-    background: #1976d2;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 15px;
-    margin: 5px;
-}
-
-/* Linha separadora */
-hr {
-    margin: 20px 0;
-}
+body { font-family: Arial, sans-serif; background:#f0f2f5; margin:0; padding:0; }
+.container { max-width:800px; margin:50px auto; background:white; padding:20px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.1); }
+.hidden { display:none; }
+h2,h3 { text-align:center; }
+input { display:block; width:90%; margin:10px auto; padding:10px; font-size:16px; }
+button { padding:12px 20px; margin:5px; font-size:16px; cursor:pointer; border-radius:8px; border:none; transition:0.3s; }
+button:hover { opacity:0.8; }
+.buttons button { font-size:20px; }
+table { width:100%; border-collapse:collapse; margin-top:15px; }
+th,td { padding:10px; text-align:center; border-bottom:1px solid #ddd; }
+.relatorios {
