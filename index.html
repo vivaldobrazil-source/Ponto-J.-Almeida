@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Controle de Ponto</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1976d2">
+
+</head>
+<body>
+
+<h2>Controle de Ponto</h2>
+
+<input type="text" id="nome" placeholder="Nome completo">
+
+<select id="tipo">
+  <option value="Entrada">Entrada</option>
+  <option value="Saída">Saída</option>
+  <option value="Almoço Saída">Saída para Almoço</option>
+  <option value="Almoço Retorno">Retorno do Almoço</option>
+</select>
+
+<button onclick="registrarPonto()">Registrar Ponto</button>
+<button onclick="gerarExcel()">Exportar Excel</button>
+<button onclick="gerarPDF()">Exportar PDF</button>
+
+<hr>
+
+<div id="lista"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="app.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
+</body>
+</html>
