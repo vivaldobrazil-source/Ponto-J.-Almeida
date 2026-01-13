@@ -6,15 +6,12 @@
 <title>Controle de Ponto - Firebase</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 <div class="container">
 
-  <!-- Tela de Login -->
+  <!-- Login -->
   <div id="login-screen">
     <h2>Login</h2>
     <input type="text" id="username" placeholder="Nome de usuário">
@@ -24,7 +21,7 @@
     <p id="login-error" class="error"></p>
   </div>
 
-  <!-- Tela de Registro -->
+  <!-- Registro -->
   <div id="register-screen" class="hidden">
     <h2>Registrar Usuário</h2>
     <input type="text" id="reg-username" placeholder="Nome de usuário">
@@ -34,7 +31,7 @@
     <p id="register-error" class="error"></p>
   </div>
 
-  <!-- Tela de Marcação de Ponto -->
+  <!-- Tela de ponto -->
   <div id="ponto-screen" class="hidden">
     <h2>Bem-vindo, <span id="user-display"></span></h2>
 
@@ -59,7 +56,7 @@
       <tbody></tbody>
     </table>
 
-    <!-- Relatórios (Admin) -->
+    <!-- Admin -->
     <div id="admin-controls" class="hidden">
       <h3>Relatórios Admin</h3>
       <input type="date" id="data-inicio"> até 
@@ -72,13 +69,16 @@
     <div class="relatorios">
       <button onclick="gerarPDF(false)">📄 PDF</button>
       <button onclick="gerarExcel(false)">📊 Excel</button>
-      <button onclick="compartilharWhatsApp()">💬 WhatsApp</button>
     </div>
 
     <button onclick="logout()" class="logout">Sair</button>
   </div>
 
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
+
