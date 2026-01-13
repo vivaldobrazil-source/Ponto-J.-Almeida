@@ -17,7 +17,7 @@
   <!-- Tela de Login -->
   <div id="login-screen">
     <h2>Login</h2>
-    <input type="email" id="email" placeholder="Email">
+    <input type="text" id="username" placeholder="Nome de usuário">
     <input type="password" id="password" placeholder="Senha">
     <button onclick="login()">Entrar</button>
     <button onclick="mostrarRegistro()">Registrar novo usuário</button>
@@ -27,7 +27,7 @@
   <!-- Tela de Registro -->
   <div id="register-screen" class="hidden">
     <h2>Registrar Usuário</h2>
-    <input type="email" id="reg-email" placeholder="Email">
+    <input type="text" id="reg-username" placeholder="Nome de usuário">
     <input type="password" id="reg-password" placeholder="Senha">
     <button onclick="registrar()">Registrar</button>
     <button onclick="voltarLogin()">Voltar</button>
@@ -44,3 +44,41 @@
       <button onclick="marcarPonto('saidaAlmoço')">🍔 Saída Almoço</button>
       <button onclick="marcarPonto('retornoAlmoço')">☕ Retorno Almoço</button>
     </div>
+
+    <h3>Registros</h3>
+    <table id="tabela-pontos">
+      <thead>
+        <tr>
+          <th>Usuário</th>
+          <th>Tipo</th>
+          <th>Data/Hora</th>
+          <th>Localização</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <!-- Relatórios (Admin) -->
+    <div id="admin-controls" class="hidden">
+      <h3>Relatórios Admin</h3>
+      <input type="date" id="data-inicio"> até 
+      <input type="date" id="data-fim">
+      <input type="text" id="usuario-rel" placeholder="Usuário (opcional)">
+      <button onclick="gerarPDF(true)">📄 PDF</button>
+      <button onclick="gerarExcel(true)">📊 Excel</button>
+    </div>
+
+    <div class="relatorios">
+      <button onclick="gerarPDF(false)">📄 PDF</button>
+      <button onclick="gerarExcel(false)">📊 Excel</button>
+      <button onclick="compartilharWhatsApp()">💬 WhatsApp</button>
+    </div>
+
+    <button onclick="logout()" class="logout">Sair</button>
+  </div>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>
