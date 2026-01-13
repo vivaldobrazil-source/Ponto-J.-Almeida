@@ -1,103 +1,62 @@
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  padding: 15px;
-  background: #fafafa;
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    text-align: center;
+    padding: 10px;
 }
 
-h2 {
-  text-align: center;
+h1 {
+    color: #1976d2;
 }
 
-input, button, select {
-  padding: 10px;
-  margin: 5px 0;
-  width: 100%;
-  font-size: 16px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+input {
+    padding: 10px;
+    margin: 6px;
+    width: 90%;
+    max-width: 300px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
 }
 
 button {
-  background: #1976d2;
-  color: white;
-  border: none;
-  cursor: pointer;
+    cursor: pointer;
 }
 
-button:active {
-  opacity: 0.8;
+/* Área dos botões */
+.botoes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    max-width: 400px;
+    margin: auto;
 }
 
-/* ================= BOTÕES EM ÍCONES ================= */
-
-.botoes-icones {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin: 20px 0;
+/* Botões grandes (agora com ícones menores) */
+.btn.grande {
+    background: white;
+    border: 2px solid #1976d2;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;   /* TEXTO MENOR */
+    font-weight: bold;
 }
 
-.botao-icone {
-  background: #eeeeee;
-  border-radius: 16px;
-  text-align: center;
-  padding: 22px 10px;
-  cursor: pointer;
-  font-size: 42px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.25);
-  user-select: none;
-  transition: 0.15s;
+/* Emoji / ícones menores */
+.btn.grande span {
+    font-size: 16px;   /* TAMANHO DO ÍCONE */
 }
 
-.botao-icone span {
-  display: block;
-  font-size: 16px;
-  margin-top: 6px;
-  font-weight: bold;
+/* Botões de relatório */
+button {
+    background: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 15px;
+    margin: 5px;
 }
 
-.botao-icone:active {
-  transform: scale(0.94);
-}
-
-/* Cores individuais */
-
-.entrada {
-  background: #d4f8d4;
-}
-
-.saida {
-  background: #ffd6d6;
-}
-
-.almoco_saida {
-  background: #fff2c6;
-}
-
-.almoco_retorno {
-  background: #d9ecff;
-}
-
-/* ================= POPUP ================= */
-
-.popup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.6);
-  z-index: 999;
-}
-
-.popup div {
-  background: white;
-  padding: 25px 30px;
-  border-radius: 12px;
-  font-size: 20px;
-  text-align: center;
-  box-shadow: 0 5px 10px rgba(0,0,0,0.4);
+/* Linha separadora */
+hr {
+    margin: 20px 0;
 }
