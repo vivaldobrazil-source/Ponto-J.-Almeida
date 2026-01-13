@@ -1,4 +1,4 @@
-// FIREBASE CONFIG
+// FIREBASE CONFIG - substitua pelas suas chaves
 const firebaseConfig = {
   apiKey: "COLE_SUA_API_KEY",
   authDomain: "SEU_PROJETO.firebaseapp.com",
@@ -64,27 +64,45 @@ async function registrar(){
   }
 }
 
-// MOSTRAR / VOLTAR
-function mostrarRegistro(){
-  document.getElementById("login-screen").classList.add("hidden");
-  document.getElementById("register-screen").classList.remove("hidden");
-}
-function voltarLogin(){
-  document.getElementById("register-screen").classList.add("hidden");
-  document.getElementById("login-screen").classList.remove("hidden");
-}
+function mostrarRegistro(){ document.getElementById("login-screen").classList.add("hidden"); document.getElementById("register-screen").classList.remove("hidden"); }
+function voltarLogin(){ document.getElementById("register-screen").classList.add("hidden"); document.getElementById("login-screen").classList.remove("hidden"); }
 
-// LOGOUT
-function logout(){
-  currentUser = null;
-  document.getElementById("login-screen").classList.remove("hidden");
-  document.getElementById("ponto-screen").classList.add("hidden");
-}
+function logout(){ currentUser = null; document.getElementById("login-screen").classList.remove("hidden"); document.getElementById("ponto-screen").classList.add("hidden"); }
 
-// MARCAR PONTO
 function marcarPonto(tipo){
   if(!currentUser) return alert("Usuário não logado");
   navigator.geolocation.getCurrentPosition(async (pos)=>{
     const data = new Date();
     await db.collection("pontos").add({
       usuario: currentUser.username,
+      tipo,
+      data: data.toISOString(),
+      localizacao: `Lat:${pos.coords.latitude.toFixed(5)},Lng:${pos.coords.longitude.toFixed(5)}`
+    });
+    carregarTabela();
+  },()=>alert("Não foi possível obter localização."));
+}
+
+async function carregarTabela(){
+  if(!currentUser) return;
+  let snapshot;
+  if(currentUser.admin) snapshot = await db.collection("pontos").orderBy("data","desc").get();
+  else snapshot = await db.collection("pontos").where("usuario","==",currentUser.username).orderBy("data","desc").get();
+
+  const tbody = document.querySelector("#tabela-pontos tbody");
+  tbody.innerHTML = "";
+  snapshot.forEach(doc=>{
+    const r = doc.data();
+    tbody.innerHTML += `<tr>
+      <td>${r.usuario}</td>
+      <td>${r.tipo}</td>
+      <td>${new Date(r.data).toLocaleString()}</td>
+      <td>${r.localizacao}</td>
+      <td>${currentUser.admin || r.usuario===currentUser.username ? `<button onclick="excluir('${doc.id}')">🗑️</button>`:""}</td>
+    </tr>`;
+  });
+}
+
+function excluir(id){ if(confirm("Deseja excluir este registro?")) db.collection("pontos").doc(id).delete().then(()=> carregarTabela()); }
+
+// PDF / Excel podem ser mantidos iguais
