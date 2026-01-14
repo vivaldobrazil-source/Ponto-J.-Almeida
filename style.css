@@ -1,13 +1,44 @@
-body { font-family: Arial, sans-serif; background:#f0f2f5; margin:0; padding:0; }
-.container { max-width:800px; margin:50px auto; background:white; padding:20px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.1); }
-.hidden { display:none; }
-h2,h3 { text-align:center; }
-input { display:block; width:90%; margin:10px auto; padding:10px; font-size:16px; }
-button { padding:12px 20px; margin:5px; font-size:16px; cursor:pointer; border-radius:8px; border:none; transition:0.3s; }
-button:hover { opacity:0.8; }
-.buttons button { font-size:20px; }
-table { width:100%; border-collapse:collapse; margin-top:15px; }
-th,td { padding:10px; text-align:center; border-bottom:1px solid #ddd; }
-.relatorios { text-align:center; margin-top:20px; }
-.logout { background:#e74c3c; color:white; display:block; margin:20px auto 0; }
-.error { color:red; text-align:center; }
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+header {
+    background: #4CAF50;
+    color: white;
+    padding: 20px;
+}
+
+.screen { padding: 20px; }
+input { padding: 10px; margin: 10px 0; width: 200px; }
+button { padding: 10px 20px; margin: 5px; cursor: pointer; font-size: 16px; }
+.password-field { position: relative; display: inline-block; }
+.toggle-pass { position: absolute; right: 10px; top: 10px; cursor: pointer; }
+
+.buttons-container { margin: 20px 0; }
+.small-btn { font-size: 16px; padding: 8px 12px; margin: 5px; min-width: 120px; }
+
+#message { margin-top: 20px; color: green; font-weight: bold; }
+
+table {
+    width: 95%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+th, td { padding: 8px; border: 1px solid #ddd; text-align: center; }
+th { background: #4CAF50; color: white; }
+tr:nth-child(even) { background: #f9f9f9; }
+button.delete-btn { background: #f44336; color: white; border: none; padding: 5px 10px; cursor: pointer; font-size: 12px; border-radius: 4px; }
+
+tr.entrada {background-color: #d1e7dd;}  /* Verde Claro */
+tr.saida {background-color: #f8d7da;}    /* Vermelho Claro */
+tr.almoco {background-color: #fff3cd;}   /* Amarelo Claro */
+tr.retorno {background-color: #cfe2ff;}  /* Azul Claro */
+
+.filters { margin: 20px 0; }
+.filters label { margin: 0 10px; }

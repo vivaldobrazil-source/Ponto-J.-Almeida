@@ -1,88 +1,46 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Controle de Ponto - J. Almeida</title>
-<link rel="stylesheet" href="style.css">
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-<!-- XLSX e jsPDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PONTO CERTO J. ALMEIDA</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
+<header>
+    <h1>PONTO CERTO J. ALMEIDA</h1>
+</header>
 
-<div class="container">
-
-  <!-- LOGIN -->
-  <div id="login-screen">
-    <h2>Login</h2>
-    <input type="text" id="username" placeholder="Nome de usuário">
-    <input type="password" id="password" placeholder="Senha">
+<!-- Tela de Login -->
+<div id="login-screen" class="screen">
+    <h2>Entrar</h2>
+    <input type="text" id="login-username" placeholder="Usuário">
+    <div class="password-field">
+        <input type="password" id="login-password" placeholder="Senha">
+        <span class="toggle-pass" onclick="togglePassword('login-password')">👁️</span>
+    </div>
     <button onclick="login()">Entrar</button>
-    <button onclick="mostrarRegistro()">Registrar novo usuário</button>
-    <p id="login-error" class="error"></p>
-  </div>
-
-  <!-- REGISTRO -->
-  <div id="register-screen" class="hidden">
-    <h2>Registrar Usuário</h2>
-    <input type="text" id="reg-username" placeholder="Nome de usuário">
-    <input type="password" id="reg-password" placeholder="Senha">
-    <button onclick="registrar()">Registrar</button>
-    <button onclick="voltarLogin()">Voltar</button>
-    <p id="register-error" class="error"></p>
-  </div>
-
-  <!-- PONTO -->
-  <div id="ponto-screen" class="hidden">
-    <h2>Bem-vindo, <span id="user-display"></span></h2>
-
-    <div class="buttons">
-      <button onclick="marcarPonto('entrada')">🚩 Entrada</button>
-      <button onclick="marcarPonto('saida')">🏁 Saída</button>
-      <button onclick="marcarPonto('saidaAlmoço')">🍔 Saída Almoço</button>
-      <button onclick="marcarPonto('retornoAlmoço')">☕ Retorno Almoço</button>
-    </div>
-
-    <h3>Registros</h3>
-    <table id="tabela-pontos">
-      <thead>
-        <tr>
-          <th>Usuário</th>
-          <th>Tipo</th>
-          <th>Data/Hora</th>
-          <th>Localização</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
-    <!-- Admin -->
-    <div id="admin-controls" class="hidden">
-      <h3>Relatórios Admin</h3>
-      <input type="date" id="data-inicio"> até 
-      <input type="date" id="data-fim">
-      <input type="text" id="usuario-rel" placeholder="Usuário (opcional)">
-      <button onclick="gerarPDF(true)">📄 PDF</button>
-      <button onclick="gerarExcel(true)">📊 Excel</button>
-    </div>
-
-    <div class="relatorios">
-      <button onclick="gerarPDF(false)">📄 PDF</button>
-      <button onclick="gerarExcel(false)">📊 Excel</button>
-    </div>
-
-    <button onclick="logout()" class="logout">Sair</button>
-  </div>
-
+    <p>Não tem cadastro? <button onclick="showScreen('register-screen')">Cadastrar novo usuário</button></p>
 </div>
 
-<script src="app.js"></script>
-</body>
-</html>
+<!-- Tela de Cadastro -->
+<div id="register-screen" class="screen" style="display:none;">
+    <h2>Cadastrar Usuário</h2>
+    <input type="text" id="register-username" placeholder="Usuário">
+    <div class="password-field">
+        <input type="password" id="register-password" placeholder="Senha">
+        <span class="toggle-pass" onclick="togglePassword('register-password')">👁️</span>
+    </div>
+    <div class="password-field">
+        <input type="password" id="register-password-confirm" placeholder="Confirme a Senha">
+        <span class="toggle-pass" onclick="togglePassword('register-password-confirm')">👁️</span>
+    </div>
+    <button onclick="registerUser()">Cadastrar</button>
+    <button onclick="showScreen('login-screen')">Voltar</button>
+</div>
+
+<!-- Tela Principal -->
+<div id="main-screen" class="screen" style="display:none;">
+    <h2>Bem-vindo, <span id="us
