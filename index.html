@@ -1,46 +1,91 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PONTO CERTO J. ALMEIDA</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
-<header>
-    <h1>PONTO CERTO J. ALMEIDA</h1>
-</header>
 
-<!-- Tela de Login -->
-<div id="login-screen" class="screen">
-    <h2>Entrar</h2>
-    <input type="text" id="login-username" placeholder="Usuário">
-    <div class="password-field">
-        <input type="password" id="login-password" placeholder="Senha">
-        <span class="toggle-pass" onclick="togglePassword('login-password')">👁️</span>
-    </div>
-    <button onclick="login()">Entrar</button>
-    <p>Não tem cadastro? <button onclick="showScreen('register-screen')">Cadastrar novo usuário</button></p>
-</div>
+<main class="container">
 
-<!-- Tela de Cadastro -->
-<div id="register-screen" class="screen" style="display:none;">
-    <h2>Cadastrar Usuário</h2>
-    <input type="text" id="register-username" placeholder="Usuário">
-    <div class="password-field">
-        <input type="password" id="register-password" placeholder="Senha">
-        <span class="toggle-pass" onclick="togglePassword('register-password')">👁️</span>
-    </div>
-    <div class="password-field">
-        <input type="password" id="register-password-confirm" placeholder="Confirme a Senha">
-        <span class="toggle-pass" onclick="togglePassword('register-password-confirm')">👁️</span>
-    </div>
-    <button onclick="registerUser()">Cadastrar</button>
-    <button onclick="showScreen('login-screen')">Voltar</button>
-</div>
+    <h1>PONTO CERTO<br>J. ALMEIDA</h1>
 
-<!-- Tela Principal -->
-<div id="main-screen" class="screen" style="display:none;">
-    <h2>Bem-vindo, <span id="us
+    <!-- LOGIN -->
+    <section id="login">
+        <h2>Login</h2>
+
+        <div class="input-field">
+            <label for="email-login">E-mail</label>
+            <input type="email" id="email-login" placeholder="Digite seu e-mail">
+        </div>
+
+        <div class="input-field">
+            <label for="senha-login">Senha</label>
+            <input type="password" id="senha-login" placeholder="Digite sua senha">
+        </div>
+
+        <button onclick="login()">🔐 Entrar</button>
+        <p id="msgLogin"></p>
+    </section>
+
+    <hr>
+
+    <!-- CADASTRO -->
+    <section id="cadastro">
+        <h2>Criar Conta</h2>
+
+        <div class="input-field">
+            <label for="nome">Nome Completo</label>
+            <input type="text" id="nome" placeholder="Seu nome completo">
+        </div>
+
+        <div class="input-field">
+            <label for="email-cadastro">E-mail</label>
+            <input type="email" id="email-cadastro" placeholder="exemplo@email.com">
+        </div>
+
+        <div class="input-field">
+            <label for="senha-cadastro">Senha</label>
+            <input type="password" id="senha-cadastro" placeholder="Letras e números">
+        </div>
+
+        <button onclick="cadastrar()">📝 Cadastrar</button>
+        <p id="msgCadastro"></p>
+    </section>
+
+    <!-- APLICATIVO -->
+    <section id="app" class="hidden">
+
+        <h2>Marcação de Ponto</h2>
+
+        <div class="botoes">
+            <button onclick="registrar('Entrada')">🚩 Entrada</button>
+            <button onclick="registrar('Saída')">🏁 Saída</button>
+        </div>
+
+        <div class="botoes">
+            <button onclick="registrarAlmoco('Saída Almoço')">🍔 Saída Almoço</button>
+            <button onclick="registrarAlmoco('Retorno Almoço')">☕ Retorno Almoço</button>
+        </div>
+
+        <div class="botoes">
+            <button onclick="gerarPDF()">📄 Relatório PDF</button>
+            <button onclick="gerarExcel()">📊 Relatório Excel</button>
+        </div>
+
+        <!-- ADMIN -->
+        <div id="admin" class="hidden">
+            <h3>Administrador</h3>
+            <select id="usuarioRelatorio"></select>
+        </div>
+
+        <p id="msg"></p>
+    </section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
