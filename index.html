@@ -1,90 +1,80 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PONTO CERTO J. ALMEIDA</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PONTO CERTO J. ALMEIDA</title>
+
+<link rel="stylesheet" href="style.css">
+
+<!-- PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Excel -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
 </head>
 <body>
 
-<main class="container">
+<div class="app">
 
-    <h1>PONTO CERTO<br>J. ALMEIDA</h1>
+<header>
+    <h1>PONTO CERTO</h1>
+    <small>J. ALMEIDA</small>
+</header>
 
-    <!-- LOGIN -->
-    <section id="login">
-        <h2>Login</h2>
+<!-- CADASTRO -->
+<section id="cadastro">
+    <input id="cadUsuario" placeholder="👤 Usuário">
+    <input id="cadSenha" type="password" placeholder="🔒 Senha">
+    <button onclick="confirmarCadastro()">✔ Confirmar</button>
+    <p id="msgCadastro"></p>
+</section>
 
-        <div class="input-field">
-            <label for="email-login">E-mail</label>
-            <input type="email" id="email-login" placeholder="Digite seu e-mail">
-        </div>
+<!-- LOGIN -->
+<section id="login" class="hidden">
+    <input id="loginUsuario" placeholder="👤 Usuário">
+    <input id="loginSenha" type="password" placeholder="🔒 Senha">
+    <button onclick="entrar()">➡ Entrar</button>
+    <p id="msgLogin"></p>
+</section>
 
-        <div class="input-field">
-            <label for="senha-login">Senha</label>
-            <input type="password" id="senha-login" placeholder="Digite sua senha">
-        </div>
+<!-- SISTEMA -->
+<section id="sistema" class="hidden">
 
-        <button onclick="login()">🔐 Entrar</button>
-        <p id="msgLogin"></p>
-    </section>
+<nav>
+    <button onclick="logout()">⏻ Logout</button>
+</nav>
 
-    <hr>
+<div class="linha">
+    <button onclick="registrar('Entrada')">🚩 Entrada</button>
+    <button onclick="registrar('Saída')">🏁 Saída</button>
+</div>
 
-    <!-- CADASTRO -->
-    <section id="cadastro">
-        <h2>Criar Conta</h2>
+<div class="linha">
+    <button onclick="registrarAlmoco('Saída Almoço')">🍔 Almoço</button>
+    <button onclick="registrarAlmoco('Retorno Almoço')">☕ Retorno</button>
+</div>
 
-        <div class="input-field">
-            <label for="nome">Nome Completo</label>
-            <input type="text" id="nome" placeholder="Seu nome completo">
-        </div>
+<div class="linha">
+    <button onclick="gerarPDF()">📄 PDF</button>
+    <button onclick="gerarExcel()">📊 Excel</button>
+</div>
 
-        <div class="input-field">
-            <label for="email-cadastro">E-mail</label>
-            <input type="email" id="email-cadastro" placeholder="exemplo@email.com">
-        </div>
+<h3>Histórico</h3>
+<ul id="historico"></ul>
 
-        <div class="input-field">
-            <label for="senha-cadastro">Senha</label>
-            <input type="password" id="senha-cadastro" placeholder="Letras e números">
-        </div>
+<!-- ADMIN -->
+<div id="admin" class="hidden">
+    <h3>Administrador</h3>
+    <select id="filtroUsuario" onchange="listarHistorico()"></select>
+</div>
 
-        <button onclick="cadastrar()">📝 Cadastrar</button>
-        <p id="msgCadastro"></p>
-    </section>
+<p id="msgSistema"></p>
 
-    <!-- APLICATIVO -->
-    <section id="app" class="hidden">
+</section>
 
-        <h2>Marcação de Ponto</h2>
-
-        <div class="botoes">
-            <button onclick="registrar('Entrada')">🚩 Entrada</button>
-            <button onclick="registrar('Saída')">🏁 Saída</button>
-        </div>
-
-        <div class="botoes">
-            <button onclick="registrarAlmoco('Saída Almoço')">🍔 Saída Almoço</button>
-            <button onclick="registrarAlmoco('Retorno Almoço')">☕ Retorno Almoço</button>
-        </div>
-
-        <div class="botoes">
-            <button onclick="gerarPDF()">📄 Relatório PDF</button>
-            <button onclick="gerarExcel()">📊 Relatório Excel</button>
-        </div>
-
-        <!-- ADMIN -->
-        <div id="admin" class="hidden">
-            <h3>Administrador</h3>
-            <select id="usuarioRelatorio"></select>
-        </div>
-
-        <p id="msg"></p>
-    </section>
-
-</main>
+</div>
 
 <script src="script.js"></script>
 </body>
